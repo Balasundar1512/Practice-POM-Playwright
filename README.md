@@ -1,1 +1,2 @@
-Practice codes 
+POM model
+
