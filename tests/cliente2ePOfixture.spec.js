@@ -4,10 +4,10 @@ const { text, json } = require('node:stream/consumers');
 //to access class and methods from js file
 const {POManager} = require('../PageObject/POManager');      //POManager contains classes of all pages 
 //dataset -> stringigying the json file -> again converting to json to prevent any confusion in that json file
-const dataset = JSON.parse(JSON.stringify(require('../utils/cliente2ePOjson.json')));     //This file contain the test data in json format
+//const dataset = JSON.parse(JSON.stringify(require('../utils/cliente2ePOjson.json')));     //This file contain the test data in json format
+const {customtest} = require('../utils/test-base');
 
-
-test('End to End client app', async ({page}) => {
+customtest('End to End client app', async ({page, testdataFororders}) => {
 
         // const userinput= "maki123@gmail.com";
         // const password = "User@123"
@@ -20,26 +20,26 @@ test('End to End client app', async ({page}) => {
 
         //calling methods from LoginPage.js class
         await loginPage.goTo();
-        await loginPage.loginCred(dataset.userinput, dataset.password);
+        await loginPage.loginCred(testdataFororders.userinput, testdataFororders.password);
         
         //calling DashboardPage.js class
         const dashboardpage = poManager.getDashboardpage();
 
         //calling method from Dashboard.js class to search the specific product and add to cart 
-        await dashboardpage.searchPrdAddcart(dataset.prodname);
+        await dashboardpage.searchPrdAddcart(testdataFororders.prodname);
         
         //calling CartPage.js class
         const cartpage = poManager.getCartpage();
 
         //calling method from CartPage.js class to verify whether the added product present in cart and click checkout or BuyNow
-        await cartpage.checkoutprd(dataset.prodname);
+        await cartpage.checkoutprd(testdataFororders.prodname);
 
         //calling PaymentPage.js class
         const paymentpage = poManager.getPaymentpage();
 
         //calling methods from paymentpage.js class to fill all the payment details
         await paymentpage.personalInfo();
-        await paymentpage.shippingInfo(dataset.userinput);
+        await paymentpage.shippingInfo(testdataFororders.userinput);
         
         //Verifying text and took orderid
         await expect(page.locator("h1")).toHaveText(" Thankyou for the order. ");
@@ -49,7 +49,7 @@ test('End to End client app', async ({page}) => {
         const ordersPage = poManager.getOrderspage();
 
         //calling method from OrdersPage.js class to view and verify the details
-        await ordersPage.orderPage(orderid, dataset.userinput);
+        await ordersPage.orderPage(orderid, testdataFororders.userinput);
         
 });
 
